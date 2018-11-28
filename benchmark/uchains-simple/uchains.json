@@ -1,0 +1,25 @@
+{
+  "uchains": {
+    "network": {
+      "restapi": {
+        "url": "http://localhost:7051"
+      }
+    },
+    "contract": {
+      "fileName": "poeHeavy",
+      "version": "1-0-0",
+      "key": "../../network/uchains/simplenetwork/node-1/conf/cert/txRootCA.key",
+      "cert": "../../network/uchains/simplenetwork/node-1/conf/cert/txRootCA.crt",
+      "filePath": "../../network/uchains/simplenetwork/node-1/contract",
+      "joinVersionCmdTye": "5",
+      "joinChainCmdType": "1",
+      "appSecEnabled": "1",
+      "txPoolEnabled": "0",
+      "dbType": "mysql",
+      "chainType": "14",
+      "ConsensusType": "2",
+      "bftNum": "1",
+      "geneBftName": "vp0_org0"
+    }
+  }
+}

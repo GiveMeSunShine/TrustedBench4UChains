@@ -1,0 +1,59 @@
+---
+version: '2'
+services:
+
+  db:
+    image: mysql:5.7
+    environment:
+      - MYSQL_DATABASE=mysql
+      - MYSQL_ROOT_PASSWORD=UMF@uchains
+    ports:
+      - "3333:3306"
+    volumes:
+      - /home/shihong/workspace/data/mysql:/var/lib/mysql
+      - /home/shihong/workspace/goProject/src/TrustedBench4UChains/network/uchains/simplenetwork/node-1/conf/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+
+
+  
+  uchains:
+    depends_on:
+      - db
+    image: uchains:v2.0-7013-1
+    environment:
+      - DEPLOYMENTMETHOD=docker
+      - CHAINS_LINKPATH=/platform
+      - NETWORK_SELF_PEERID=vp0
+      - NETWORK_SELF_ORGID=org0
+      - NETWORK_SELF_CITY=北京
+      - NETWORK_SELF_VALIDATOR=true
+      - NETWORK_NETID=umf
+      - DB_MYSQL_IP=192.168.1.110
+      - DB_MYSQL_PORT=3333
+      - DB_MYSQL_USERNAME=root
+      - DB_MYSQL_PASSWD=UMF@uchains
+      - NETWORK_SELF_ADDRESS=192.168.1.110
+      - MONITOR_PUSHMETRICADDRESS=http://192.168.1.110:9091
+      - PKI_TXROOTCERT=/cert/rsa/txRootCA.crt
+      - PKI_TXKEY=/cert/rsa/vp0_org0.key
+      - PKI_TXCERT=/cert/rsa/vp0_org0.crt
+      - NETWORK_TLS_TXROOTCERT=/cert/rsa/txRootCA.crt
+      - NETWORK_TLS_TXKEY=/cert/rsa/vp0_org0.key
+      - NETWORK_TLS_TXCERT=/cert/rsa/vp0_org0.crt
+      - MONITOR_PUSHINTERVALTIME=30
+      - DOCKER_RESTPORT=:7051
+      - DOCKER_ONENETPORT=7054
+      - DOCKER_TXPORT=7452
+      - DOCKER_CONSENSUSPORT=7453
+      - DOCKER_SYNCPORT=7454
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /home/shihong/workspace/goProject/src/TrustedBench4UChains/network/uchains/simplenetwork/node-1/conf/cert:/cert/rsa
+      - /home/shihong/workspace/goProject/src/TrustedBench4UChains/network/uchains/simplenetwork/node-1/contract:/platform
+      - /home/shihong/workspace/data/log:/loggings
+    ports:
+      - "7051:7451"
+      - "7054:7455"
+      - "19100:9100"
+    links:
+      - db
