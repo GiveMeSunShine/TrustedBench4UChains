@@ -14,7 +14,7 @@ services:
       - /home/shihong/workspace/goProject/src/TrustedBench4UChains/network/uchains/simplenetwork/node-1/conf/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
 
 
-  
+
   uchains:
     depends_on:
       - db
@@ -27,12 +27,12 @@ services:
       - NETWORK_SELF_CITY=北京
       - NETWORK_SELF_VALIDATOR=true
       - NETWORK_NETID=umf
-      - DB_MYSQL_IP=192.168.1.110
+      - DB_MYSQL_IP=192.168.199.143
       - DB_MYSQL_PORT=3333
       - DB_MYSQL_USERNAME=root
       - DB_MYSQL_PASSWD=UMF@uchains
-      - NETWORK_SELF_ADDRESS=192.168.1.110
-      - MONITOR_PUSHMETRICADDRESS=http://192.168.1.110:9091
+      - NETWORK_SELF_ADDRESS=192.168.199.143
+      - MONITOR_PUSHMETRICADDRESS=http://192.168.199.143:9091
       - PKI_TXROOTCERT=/cert/rsa/txRootCA.crt
       - PKI_TXKEY=/cert/rsa/vp0_org0.key
       - PKI_TXCERT=/cert/rsa/vp0_org0.crt

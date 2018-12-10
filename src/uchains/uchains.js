@@ -21,28 +21,105 @@ const check_net = require('./check-net.js');
  */
 
 /**
+ * get Transaction Result by txid request
+ * @param {string} link request url
+ * @param {string} txId Transaction ID
+ * @returns {Promise<object>} The promise for the result of the execution
+*/
+function getTransactionResultRequest(link,txId){
+    Util.log(' ==> query url : ' + link);
+    let options = {
+        url: link,
+        method: 'GET',
+        gzip: true,
+        headers: {
+            'User-Agent': 'request',
+            'Connection': 'keep-alive'
+        }
+    };
+    return request(options)
+        .then(function(body) {
+            let code = (JSON.parse(body)).code;
+            if(code === '0000'){
+                let txInfo = (JSON.parse(body)).data;
+                Util.log(' ==> [ ' + txId + ' ]  ==> , txInfo :');
+                Util.log(JSON.stringify(txInfo,null,2) + '');
+                return Promise.resolve(code);
+            }
+        })
+        .catch(function (err) {
+            Util.log(' ==> Get PeerInfo request failed, ' + (err.stack ? err.stack : err));
+            return Promise.resolve('9999');
+        });
+}
+
+
+/**
  * get Transaction Result by txid
+ * @param {string} configPath The path of config.
  * @param {string} contractID Chain ID
  * @param {string} key Transaction ID
  * @returns {Promise<object>} The promise for the result of the execution
  */
-function getTransactionResult (contractID,key) {
+function getTransactionResult (configPath,contractID,key) {
     //TODO get Transaction Result by txid
-    Util.log(' ==> [getTransactionResult] contractID [' + contractID + ']  Txid [' + key+ ']');
-    return Promise.resolve(contractID);
+    Util.log(' ==> [queryTransactionResult] contractID [' + contractID + ']  Txid [' + key+ ']');
+    let config = require(configPath);
+    let restApiUrl = config.uchains.network.restapi.url;
+    const txInfoLink = restApiUrl + '/UChains/transaction/'+ contractID + '/' + key ;
+    return getTransactionResultRequest(txInfoLink,key);
 }
 
 /**
+ * submit transaction to contract
+ * @param {string} link submit transaction request url
+ * @returns {Promise<object>} The promise for the result of the execution
+ */
+function submitTransactionRequest(link){
+    let options = {
+        url: link,
+        method: 'POST',
+        body: JSON.stringify(msgJson),
+        headers: {
+            'Content-Type': 'application/json',
+            'Connection': 'keep-alive'
+        }
+    };
+    return request(options)
+        .then(function(body) {
+            let code = (JSON.parse(body)).code;
+            if(code === '0000'){
+                let txid = (JSON.parse(body)).txid;
+                Util.log(' ==> txID [ ' + txid + ' ]');
+                return Promise.resolve(txid);
+            }
+        })
+        .catch(function (err) {
+            Util.log(' ==> Register contrect version request failed, ' + (err.stack ? err.stack : err));
+            return Promise.reject(err);
+        });
+
+}
+
+
+
+
+/**
  * submit transaction to peer node
+ * @param {string} configPath The path of config.
  * @param {string} contractID The name of the chaincode.
  * @param {Array} args Array of JSON formatted arguments for transaction(s). Each element containts arguments (including the function name) passing to the chaincode. JSON attribute named transaction_type is used by default to specify the function name. If the attribute does not exist, the first attribute will be used as the function name.
  * @param {number} timeout The timeout to set for the execution in seconds.
  * @return {Promise<object>} The promise for the result of the execution.
  */
-function submitTransaction(contractID, args, timeout) {
-    //TODO submit transaction to peer node
-    Util.log(' ==> [submitTransaction] contractID [' + contractID + ']  Txid [' + args+ ']');
-    return Promise.resolve(contractID);
+function submitTransaction(configPath,contractID, args, timeout) {
+    Util.log(' ==> [submitTransaction] contractID [' + contractID + ']  submit Args [ ' + args + ' ]');
+    let config = require(configPath);
+    let restApiUrl = config.uchains.network.restapi.url;
+    //TODO analysis args to get transaction info to submitLink
+    let argsJson = JSON.parse(args);
+    const submitLink = restApiUrl + '/UChains/transaction/'+ contractID + '/' + argsJson.data ;
+    return submitTransactionRequest(submitLink);
 }
 
 
@@ -119,7 +196,7 @@ class UChains extends BlockchainInterface{
      * @return {Promise<object>} The promise for the result of the execution.
      */
     invokeSmartContract(context, contractID, contractVer, args, timeout) {
-        return submitTransaction(contractID,args,timeout);
+        return submitTransaction(this.configPath,contractID,args,timeout);
     }
 
     /**
@@ -131,7 +208,7 @@ class UChains extends BlockchainInterface{
      * @return {Promise<object>} The promise for the result of the execution.
      */
     queryState(context, contractID, contractVer, key) {
-        return getTransactionResult(contractID,key);
+        return getTransactionResult(this.configPath,contractID,key);
     }
 }
 module.exports = UChains;

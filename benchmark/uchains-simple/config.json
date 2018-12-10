@@ -15,10 +15,10 @@
       "number": 1
     },
     "rounds": [{
-      "label" : "query",
+      "label" : "commit",
       "txNumber" : [100],
       "rateControl" : [{"type": "fixed-rate", "opts": {"tps" : 50}}],
-      "callback" : "benchmark/uchains-simple/query.js"
+      "callback" : "benchmark/uchains-simple/commit.js"
     }]
   },
   "monitor": {
