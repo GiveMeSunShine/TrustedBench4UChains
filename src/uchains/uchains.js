@@ -62,7 +62,6 @@ function getTransactionResultRequest(link,txId){
  * @returns {Promise<object>} The promise for the result of the execution
  */
 function getTransactionResult (configPath,contractID,key) {
-    //TODO get Transaction Result by txid
     Util.log(' ==> [queryTransactionResult] contractID [' + contractID + ']  Txid [' + key+ ']');
     let config = require(configPath);
     let restApiUrl = config.uchains.network.restapi.url;
@@ -73,13 +72,15 @@ function getTransactionResult (configPath,contractID,key) {
 /**
  * submit transaction to contract
  * @param {string} link submit transaction request url
+ * @param {Array} args Array of JSON formatted arguments for transaction(s). Each element containts arguments (including the function name) passing to the chaincode. JSON attribute named transaction_type is used by default to specify the function name. If the attribute does not exist, the first attribute will be used as the function name.
  * @returns {Promise<object>} The promise for the result of the execution
  */
-function submitTransactionRequest(link){
+function submitTransactionRequest(link,args){
+    let argsJson = JSON.parse(args);
     let options = {
         url: link,
         method: 'POST',
-        body: JSON.stringify(msgJson),
+        body: JSON.stringify(argsJson),
         headers: {
             'Content-Type': 'application/json',
             'Connection': 'keep-alive'
@@ -98,7 +99,6 @@ function submitTransactionRequest(link){
             Util.log(' ==> Register contrect version request failed, ' + (err.stack ? err.stack : err));
             return Promise.reject(err);
         });
-
 }
 
 
@@ -116,10 +116,8 @@ function submitTransaction(configPath,contractID, args, timeout) {
     Util.log(' ==> [submitTransaction] contractID [' + contractID + ']  submit Args [ ' + args + ' ]');
     let config = require(configPath);
     let restApiUrl = config.uchains.network.restapi.url;
-    //TODO analysis args to get transaction info to submitLink
-    let argsJson = JSON.parse(args);
-    const submitLink = restApiUrl + '/UChains/transaction/'+ contractID + '/' + argsJson.data ;
-    return submitTransactionRequest(submitLink);
+    const submitLink = restApiUrl + '/UChains/poeHeavy/'+ contractID +'/transaction/';
+    return submitTransactionRequest(submitLink,args);
 }
 
 

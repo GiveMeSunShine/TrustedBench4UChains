@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/TrustedBench4UChains.iml" filepath="$PROJECT_DIR$/.idea/TrustedBench4UChains.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TrustedBench4UChains.iml" filepath="$PROJECT_DIR$/TrustedBench4UChains.iml" />
     </modules>
   </component>
 </project>
