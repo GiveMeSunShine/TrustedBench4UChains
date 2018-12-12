@@ -36,7 +36,8 @@ module.exports.init = function(blockchain, context, args) {
 module.exports.run = function () {
     Util.log(' *** POE commit Start ***' + ' ');
     let args = getArgs();
-    return bc.invokeSmartContract(contx, 'poeHeavy', '1-0-0', args, 5000).then((txId)=>{
+    let argsJson = JSON.parse(args);
+    return bc.invokeSmartContract(contx, 'poeHeavy', '1-0-0', argsJson, 50000).then((txId)=>{
         Util.log(' ==> POE commit success txId : ' + txId);
         txIds.push(txId);
     })

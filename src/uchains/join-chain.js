@@ -144,8 +144,8 @@ module.exports.run = function (config_path) {
     commUtils.log(' #### Start Join Chains ####' + '');
     return joinChain(config_path).then(()=>{
         commUtils.log(' #### Join Chains OK '+' ####');
-        commUtils.log(' *** UChains.installSmartContract() OK , Sleep 60s...... ' + '***');
-        return commUtils.sleep(60000);
+        commUtils.log(' *** UChains.installSmartContract() OK , Sleep 30s...... ' + '***');
+        return commUtils.sleep(30000);
     })
         .catch((err) => {
             commUtils.log(' ==>Join Chains failed, ' + (err.stack ? err.stack : err));

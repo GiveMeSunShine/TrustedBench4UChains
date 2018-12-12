@@ -10,7 +10,7 @@
 
 const BlockchainInterface = require('../comm/blockchain-interface.js');
 //let configPath;
-//const request = require('request-promise');
+const request = require('request-promise');
 const Util = require('../../src/comm/util');
 const join_version = require('./join-version.js');
 const join_chain = require('./join-chain.js');
@@ -72,31 +72,37 @@ function getTransactionResult (configPath,contractID,key) {
 /**
  * submit transaction to contract
  * @param {string} link submit transaction request url
- * @param {Array} args Array of JSON formatted arguments for transaction(s). Each element containts arguments (including the function name) passing to the chaincode. JSON attribute named transaction_type is used by default to specify the function name. If the attribute does not exist, the first attribute will be used as the function name.
+ * @param {Array} args Array of JSON formatted arguments for transaction(s).
+ *  Each element containts arguments (including the function name) passing to the chaincode.
+ *  JSON attribute named transaction_type is used by default to specify the function name.
+ *  If the attribute does not exist, the first attribute will be used as the function name.
  * @returns {Promise<object>} The promise for the result of the execution
  */
 function submitTransactionRequest(link,args){
-    let argsJson = JSON.parse(args);
+    //let argsJson = JSON.parse(args);
+    Util.log(' ==> link [ ' + link + ' ]');
     let options = {
         url: link,
         method: 'POST',
-        body: JSON.stringify(argsJson),
+        json: true,
+        body: args[0],
         headers: {
-            'Content-Type': 'application/json',
-            'Connection': 'keep-alive'
+            'Content-Type': 'application/json'
         }
     };
+    Util.log(' ==> args[0] : ' + JSON.stringify(args[0],null,2));
     return request(options)
         .then(function(body) {
-            let code = (JSON.parse(body)).code;
+            Util.log(' ==> body [ ' + body + ' ]');
+            let code = body.code;
             if(code === '0000'){
-                let txid = (JSON.parse(body)).txid;
+                let txid = body.txid;
                 Util.log(' ==> txID [ ' + txid + ' ]');
                 return Promise.resolve(txid);
             }
         })
         .catch(function (err) {
-            Util.log(' ==> Register contrect version request failed, ' + (err.stack ? err.stack : err));
+            Util.log(' ==> submit Transaction request failed, ' + (err.stack ? err.stack : err));
             return Promise.reject(err);
         });
 }
@@ -113,10 +119,10 @@ function submitTransactionRequest(link,args){
  * @return {Promise<object>} The promise for the result of the execution.
  */
 function submitTransaction(configPath,contractID, args, timeout) {
-    Util.log(' ==> [submitTransaction] contractID [' + contractID + ']  submit Args [ ' + args + ' ]');
+    Util.log(' ==> [submitTransaction] contractID [' + contractID + ']  submit Args [ ' + JSON.stringify(args[0]) + ' ]');
     let config = require(configPath);
     let restApiUrl = config.uchains.network.restapi.url;
-    const submitLink = restApiUrl + '/UChains/poeHeavy/'+ contractID +'/transaction/';
+    const submitLink = restApiUrl + '/UChains/poeHeavy/'+ contractID +'/transaction';
     return submitTransactionRequest(submitLink,args);
 }
 

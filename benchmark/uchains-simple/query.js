@@ -14,7 +14,7 @@ module.exports.init = function(blockchain, context, args) {
     let commit = require('./commit.js');
     bc       = blockchain;
     contx    = context;
-    txIds    = commit.txIds
+    txIds    = commit.txIds;
     return Promise.resolve();
 };
 
