@@ -10,7 +10,7 @@
 
 const BlockchainInterface = require('../comm/blockchain-interface.js');
 //let configPath;
-const request = require('request-promise');
+
 const Util = require('../../src/comm/util');
 const join_version = require('./join-version.js');
 const join_chain = require('./join-chain.js');
@@ -28,6 +28,7 @@ const check_net = require('./check-net.js');
 */
 function getTransactionResultRequest(link,txId){
     Util.log(' ==> query url : ' + link);
+    const request = require('request-promise');
     let options = {
         url: link,
         method: 'GET',
@@ -79,32 +80,12 @@ function getTransactionResult (configPath,contractID,key) {
  * @returns {Promise<object>} The promise for the result of the execution
  */
 function submitTransactionRequest(link,args){
-    //let argsJson = JSON.parse(args);
-    Util.log(' ==> link [ ' + link + ' ]');
-    let options = {
-        url: link,
-        method: 'POST',
-        json: true,
-        body: args[0],
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
-    Util.log(' ==> args[0] : ' + JSON.stringify(args[0],null,2));
-    return request(options)
-        .then(function(body) {
-            Util.log(' ==> body [ ' + body + ' ]');
-            let code = body.code;
-            if(code === '0000'){
-                let txid = body.txid;
-                Util.log(' ==> txID [ ' + txid + ' ]');
-                return Promise.resolve(txid);
-            }
-        })
-        .catch(function (err) {
-            Util.log(' ==> submit Transaction request failed, ' + (err.stack ? err.stack : err));
-            return Promise.reject(err);
-        });
+    const request = require('sync-request');
+    let respon = request('POST',link,{
+        body:JSON.stringify(args[0]),
+    });
+    let txId = JSON.parse(respon.getBody('UTF-8')).txid;
+    return Promise.resolve(txId);
 }
 
 

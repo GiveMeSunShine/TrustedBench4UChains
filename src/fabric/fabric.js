@@ -110,6 +110,7 @@ class Fabric extends BlockchainInterface{
      * @return {Promise<object>} The promise for the result of the execution.
      */
     invokeSmartContract(context, contractID, contractVer, args, timeout) {
+        commUtils.log(' args ==>' + args.toString());
         let promises = [];
         args.forEach((item, index)=>{
             try {
@@ -126,6 +127,7 @@ class Fabric extends BlockchainInterface{
                 if(func) {
                     simpleArgs.splice(0, 0, func);
                 }
+                commUtils.log(' simpleArgs ==>' + simpleArgs.toString());
                 promises.push(e2eUtils.invokebycontext(context, contractID, contractVer, simpleArgs, timeout));
             }
             catch(err) {
